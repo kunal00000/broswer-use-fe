@@ -6,10 +6,14 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useSocketStore } from "@/lib/stores/socket-store";
 import { cn } from "@/lib/utils";
 import { ImagePlayIcon } from "lucide-react";
+import Image from "next/image";
 
 export default function ArtifactViewer() {
+  const screenshots = useSocketStore((state) => state.screenshots);
+
   const { state } = useSidebar();
 
   return (
@@ -27,7 +31,17 @@ export default function ArtifactViewer() {
           </div>
 
           <SidebarContent className="border-t border-l h-full border-border bg-background rounded-tl-xl">
-            <NoScreenshot />
+            {screenshots.length > 0 ? (
+              <Image
+                alt="screenshot"
+                src={screenshots[screenshots.length - 1]}
+                width={800}
+                height={600}
+                className="h-full w-full"
+              />
+            ) : (
+              <NoScreenshot />
+            )}
           </SidebarContent>
         </section>
       </Sidebar>
@@ -35,13 +49,14 @@ export default function ArtifactViewer() {
   );
 }
 
-
-function NoScreenshot(){
+function NoScreenshot() {
   return (
     <div className="flex items-center justify-center h-full">
       <div className="flex flex-col items-center">
         <ImagePlayIcon className="h-10 w-10 text-primary" />
-        <p className="text-muted-foreground text-lg font-medium mt-3">No screenshots available</p>
+        <p className="text-muted-foreground text-lg font-medium mt-3">
+          No screenshots available
+        </p>
       </div>
     </div>
   );
