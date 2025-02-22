@@ -37,7 +37,7 @@ export default function ArtifactViewer() {
                 src={screenshots[screenshots.length - 1]}
                 width={800}
                 height={600}
-                className="h-full w-full"
+                className="h-full w-full object-contain"
               />
             ) : (
               <NoScreenshot />
