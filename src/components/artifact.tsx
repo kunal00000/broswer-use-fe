@@ -7,6 +7,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { ImagePlayIcon } from "lucide-react";
 
 export default function ArtifactViewer() {
   const { state } = useSidebar();
@@ -26,10 +27,22 @@ export default function ArtifactViewer() {
           </div>
 
           <SidebarContent className="border-t border-l h-full border-border bg-background rounded-tl-xl">
-            hello
+            <NoScreenshot />
           </SidebarContent>
         </section>
       </Sidebar>
+    </div>
+  );
+}
+
+
+function NoScreenshot(){
+  return (
+    <div className="flex items-center justify-center h-full">
+      <div className="flex flex-col items-center">
+        <ImagePlayIcon className="h-10 w-10 text-primary" />
+        <p className="text-muted-foreground text-lg font-medium mt-3">No screenshots available</p>
+      </div>
     </div>
   );
 }
