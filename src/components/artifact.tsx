@@ -1,17 +1,16 @@
 "use client";
 
-import React from "react";
 import {
   Sidebar,
   SidebarContent,
   SidebarTrigger,
   useSidebar,
-} from "./ui/sidebar";
+} from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 export default function ArtifactViewer() {
   const { state } = useSidebar();
-  console.log({ state });
+
   return (
     <div className="flex">
       <SidebarTrigger
