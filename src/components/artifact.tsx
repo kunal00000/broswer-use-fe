@@ -10,6 +10,7 @@ import { useSocketStore } from "@/lib/stores/socket-store";
 import { cn } from "@/lib/utils";
 import { ImagePlayIcon } from "lucide-react";
 import Image from "next/image";
+import { ModeToggle } from "./mode-toggle";
 
 export default function ArtifactViewer() {
   const screenshots = useSocketStore((state) => state.screenshots);
@@ -18,13 +19,9 @@ export default function ArtifactViewer() {
 
   return (
     <div className="flex">
-      {/* <SidebarTrigger
-        className={cn("ml-auto mt-4", state === "expanded" && "opacity-0")}
-      /> */}
-      <Sidebar side="right" className="bg-accent" collapsible="icon">
+      <Sidebar side="right" className="bg-accent" collapsible="offcanvas">
         <section className="ml-2 space-y-2 h-full">
           <div className="flex gap-4 mt-4 items-center ">
-            <SidebarTrigger />
             <div className="text-sm font-medium">
               <p>Browser View</p>
             </div>
