@@ -2,13 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { AgentResponse, WebSocketMessage } from "@/lib/types";
 import { useSocketStore } from "@/lib/stores/socket-store";
 import { Textarea } from "./ui/textarea";
+import { Paperclip, Send } from "lucide-react";
 
 export default function Chat() {
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -73,7 +70,7 @@ export default function Chat() {
       <div className="relative">
         <Textarea
           placeholder="Type your message here."
-          className="bg-accent p-2 border-1 border-accent-foreground rounded-md min-h-[100px] resize-none pb-12"
+          className="bg-accent p-2 border-1 border-accent-foreground rounded-md min-h-[100px] max-h-[360px] resize-none pb-12"
           value={inputValue}
           onChange={(e) => {
             setInputValue(e.target.value);
@@ -81,9 +78,14 @@ export default function Chat() {
             e.target.style.height = `${e.target.scrollHeight}px`;
           }}
         />
-        <Button className="absolute bottom-0 w-fit flex flex-row justify-start m-4">
-          Add
-        </Button>
+        <div className="absolute bottom-2 right-8 flex flex-row gap-4">
+          <Button variant="default" size="icon">
+            <Paperclip className="h-4 w-4" />
+          </Button>
+          <Button variant="default" size="icon">
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
