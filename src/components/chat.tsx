@@ -53,9 +53,12 @@ export default function Chat() {
     };
   }, []);
 
-  const sendMessage = (event: "USER_INPUT") => {
+  const sendMessage = () => {
     if (ws && inputValue) {
-      const message: WebSocketMessage = { type: event, content: inputValue };
+      const message: WebSocketMessage = {
+        type: "USER_INPUT",
+        content: inputValue,
+      };
       ws.send(JSON.stringify(message));
       setInputValue("");
     }
@@ -63,8 +66,14 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="grow overflow-auto bg-background p-4 rounded-md">
-        <p className="mt-2">Chat Body</p>
+      <div className="mt-2 grow overflow-auto bg-background p-4 rounded-md">
+        <p className="">
+          {messages.map((msg, index) => (
+            <div key={index} className="py-1">
+              {JSON.stringify(msg)}
+            </div>
+          ))}
+        </p>
       </div>
 
       <div className="relative">
@@ -82,7 +91,7 @@ export default function Chat() {
           <Button variant="default" size="icon">
             <Paperclip className="h-4 w-4" />
           </Button>
-          <Button variant="default" size="icon">
+          <Button variant="default" size="icon" onClick={() => sendMessage()}>
             <Send className="h-4 w-4" />
           </Button>
         </div>
