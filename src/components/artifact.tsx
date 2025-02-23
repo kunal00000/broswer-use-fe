@@ -18,10 +18,10 @@ export default function ArtifactViewer() {
 
   return (
     <div className="flex">
-      <SidebarTrigger
+      {/* <SidebarTrigger
         className={cn("ml-auto mt-4", state === "expanded" && "opacity-0")}
-      />
-      <Sidebar side="right" className="bg-accent">
+      /> */}
+      <Sidebar side="right" className="bg-accent" collapsible="icon">
         <section className="ml-2 space-y-2 h-full">
           <div className="flex gap-4 mt-4 items-center ">
             <SidebarTrigger />
