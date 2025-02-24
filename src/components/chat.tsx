@@ -69,14 +69,25 @@ export default function Chat() {
       <div className="mt-2 grow overflow-auto bg-background p-4 rounded-md">
         <p className="">
           {messages.map((msg, index) => (
-            <div key={index} className="py-1">
-              {JSON.stringify(msg)}
+            <div
+              key={index}
+              className="flex flex-col mb-4 max-w-[70%] bg-primary text-primary-foreground rounded-lg p-2"
+            >
+              <p className="font-semibold mb-1">AI Assistant</p>
+              <div>
+                <p className="text-sm">
+                  {msg.state}: {msg.thought}
+                </p>
+                <p></p>
+              </div>
+
+              <p className="text-sm"></p>
             </div>
           ))}
         </p>
       </div>
 
-      <div className="relative">
+      <div className="relative mb-4">
         <Textarea
           placeholder="Type your message here."
           className="bg-accent p-2 border-1 border-accent-foreground rounded-md min-h-[100px] max-h-[360px] resize-none pb-12"
@@ -99,45 +110,3 @@ export default function Chat() {
     </div>
   );
 }
-
-// <Card>
-//   <CardHeader>
-//     <CardTitle className="flex items-center justify-between">
-//       WebSocket Demo
-//       <Badge variant={isConnected ? "default" : "destructive"}>
-//         {isConnected ? "Connected" : "Disconnected"}
-//       </Badge>
-//     </CardTitle>
-//   </CardHeader>
-//   <CardContent>
-//     <div className="flex gap-2 mb-4">
-//       <Input
-//         type="text"
-//         value={inputValue}
-//         onChange={(e) => setInputValue(e.target.value)}
-//         placeholder="Type a message"
-//       />
-//       <Button onClick={() => sendMessage("USER_INPUT")} disabled={!isConnected}>
-//         Send Message
-//       </Button>
-//       <Button
-//         variant="secondary"
-//         onClick={() => sendMessage("USER_INPUT")}
-//         disabled={!isConnected}
-//       >
-//         Request Screenshot
-//       </Button>
-//     </div>
-
-//     <div className="mt-4">
-//       <h3 className="mb-2 font-semibold">Received Messages:</h3>
-//       <ScrollArea className="h-[300px] rounded-md border p-4">
-//         {messages.map((msg, index) => (
-//           <div key={index} className="py-1">
-//             {JSON.stringify(msg)}
-//           </div>
-//         ))}
-//       </ScrollArea>
-//     </div>
-//   </CardContent>
-// </Card>;
