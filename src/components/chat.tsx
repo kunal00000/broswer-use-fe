@@ -6,6 +6,7 @@ import { AgentResponse, WebSocketMessage } from "@/lib/types";
 import { useSocketStore } from "@/lib/stores/socket-store";
 import { Textarea } from "./ui/textarea";
 import { Paperclip, Send } from "lucide-react";
+import { MessageBubble } from "./message-bubble";
 
 export default function Chat() {
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -27,8 +28,9 @@ export default function Chat() {
 
       if (wsMessage.type === "AI_RESPONSE") {
         const message = JSON.parse(wsMessage.content) as AgentResponse;
+
         useSocketStore.setState((state) => ({
-          messages: [...state.messages, message],
+          messages: [...state.messages, { message: message, type: "AGENT" }],
         }));
       } else if (wsMessage.type === "SCREENSHOT") {
         const screenshot = wsMessage.content as string;
@@ -62,6 +64,10 @@ export default function Chat() {
       ws.send(JSON.stringify(message));
       setInputValue("");
     }
+
+    useSocketStore.setState((state) => ({
+      messages: [...state.messages, { message: inputValue, type: "USER" }],
+    }));
   };
 
   return (
@@ -69,19 +75,8 @@ export default function Chat() {
       <div className="mt-2 grow overflow-auto bg-background p-4 rounded-md">
         <p className="">
           {messages.map((msg, index) => (
-            <div
-              key={index}
-              className="flex flex-col mb-4 max-w-[70%] bg-primary text-primary-foreground rounded-lg p-2"
-            >
-              <p className="font-semibold mb-1">AI Assistant</p>
-              <div>
-                <p className="text-sm">
-                  {msg.state}: {msg.thought}
-                </p>
-                <p></p>
-              </div>
-
-              <p className="text-sm"></p>
+            <div key={index}>
+              <MessageBubble message={msg.message} type={msg.type} />
             </div>
           ))}
         </p>

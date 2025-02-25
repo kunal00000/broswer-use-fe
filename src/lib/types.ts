@@ -21,7 +21,12 @@ export const agentResponseSchema = z.object({
 export type AgentResponse = z.infer<typeof agentResponseSchema>;
 
 export type WebSocketMessage = {
-    type: "USER_INPUT" | "REQUEST_INPUT" | "AI_RESPONSE" | "ERROR" | "SCREENSHOT";
-    content: string;
-    requiresInput?: boolean;
-}
+  type: "USER_INPUT" | "REQUEST_INPUT" | "AI_RESPONSE" | "ERROR" | "SCREENSHOT";
+  content: string;
+  requiresInput?: boolean;
+};
+
+export type Message = {
+  message: AgentResponse | string;
+  type: "AGENT" | "USER";
+};

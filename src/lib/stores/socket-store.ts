@@ -1,9 +1,9 @@
 import { createWithEqualityFn } from "zustand/traditional";
-import { AgentResponse } from "../types";
+import { Message } from "../types";
 import { shallow } from "zustand/shallow";
 
 type SocketStore = {
-  messages: AgentResponse[];
+  messages: Message[];
   screenshots: string[];
 };
 
