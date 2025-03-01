@@ -5,21 +5,26 @@ import { Button } from "@/components/ui/button";
 import { AgentResponse, WebSocketMessage } from "@/lib/types";
 import { useSocketStore } from "@/lib/stores/socket-store";
 import { Textarea } from "./ui/textarea";
-import { Paperclip, Send } from "lucide-react";
+import { ArrowUp, Paperclip, Send, Square } from "lucide-react";
 import { MessageBubble } from "./message-bubble";
+import {
+  PromptInput,
+  PromptInputAction,
+  PromptInputActions,
+  PromptInputTextarea,
+} from "./ui/prompt-input";
 
 export default function Chat() {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const messages = useSocketStore((state) => state.messages);
-  const [inputValue, setInputValue] = useState<string>("");
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [input, setInput] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080/ws");
 
     socket.onopen = () => {
       console.log("WebSocket connected");
-      setIsConnected(true);
       setWs(socket);
     };
 
@@ -42,7 +47,6 @@ export default function Chat() {
 
     socket.onclose = () => {
       console.log("WebSocket disconnected");
-      setIsConnected(false);
       setWs(null);
     };
 
@@ -56,39 +60,51 @@ export default function Chat() {
   }, []);
 
   const sendMessage = () => {
-    if (ws && inputValue) {
+    if (ws && input) {
       const message: WebSocketMessage = {
         type: "USER_INPUT",
-        content: inputValue,
+        content: input,
       };
       ws.send(JSON.stringify(message));
-      setInputValue("");
+      setInput("");
     }
 
     useSocketStore.setState((state) => ({
-      messages: [...state.messages, { message: inputValue, type: "USER" }],
+      messages: [...state.messages, { message: input, type: "USER" }],
     }));
+  };
+
+  const handleSubmit = () => {
+    setIsLoading(true);
+    if (!input.trim()) {
+      setIsLoading(false);
+      return;
+    }
+    sendMessage();
+    setIsLoading(false);
+  };
+
+  const handleValueChange = (value: string) => {
+    setInput(value);
   };
 
   return (
     <div className="flex flex-col h-full w-full">
       <div className="mt-2 grow overflow-auto bg-background p-4 rounded-md">
-        <p className="">
-          {messages.map((msg, index) => (
-            <div key={index}>
-              <MessageBubble message={msg.message} type={msg.type} />
-            </div>
-          ))}
-        </p>
+        {messages.map((msg, index) => (
+          <div key={index}>
+            <MessageBubble message={msg.message} type={msg.type} />
+          </div>
+        ))}
       </div>
-
+      {/* 
       <div className="relative mb-4">
         <Textarea
           placeholder="Type your message here."
           className="bg-accent p-2 border-1 border-accent-foreground rounded-md min-h-[100px] max-h-[360px] resize-none pb-12"
-          value={inputValue}
+          value={input}
           onChange={(e) => {
-            setInputValue(e.target.value);
+            setInput(e.target.value);
             e.target.style.height = "auto";
             e.target.style.height = `${e.target.scrollHeight}px`;
           }}
@@ -101,7 +117,35 @@ export default function Chat() {
             <Send className="h-4 w-4" />
           </Button>
         </div>
-      </div>
+      </div> */}
+
+      <PromptInput
+        value={input}
+        onValueChange={handleValueChange}
+        isLoading={isLoading}
+        onSubmit={handleSubmit}
+        className="w-full max-w-(--breakpoint-md)"
+      >
+        <PromptInputTextarea placeholder="Ask me anything..." />
+        <PromptInputActions className="justify-end pt-2">
+          <PromptInputAction
+            tooltip={isLoading ? "Stop generation" : "Send message"}
+          >
+            <Button
+              variant="default"
+              size="icon"
+              className="h-8 w-8 rounded-full"
+              onClick={handleSubmit}
+            >
+              {isLoading ? (
+                <Square className="size-5 fill-current" />
+              ) : (
+                <ArrowUp className="size-5" />
+              )}
+            </Button>
+          </PromptInputAction>
+        </PromptInputActions>
+      </PromptInput>
     </div>
   );
 }
