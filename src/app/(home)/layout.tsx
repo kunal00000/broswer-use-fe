@@ -9,8 +9,8 @@ export default function HomeLayout({
   return (
     <>
       <SidebarProvider>
-        <ArtifactViewer />
         {children}
+        <ArtifactViewer />
       </SidebarProvider>
     </>
   );
