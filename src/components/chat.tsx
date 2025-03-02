@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AgentResponse, WebSocketMessage } from "@/lib/types";
 import { useSocketStore } from "@/lib/stores/socket-store";
@@ -19,6 +19,7 @@ export default function Chat() {
   const messages = useSocketStore((state) => state.messages);
   const [input, setInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080/ws");
@@ -59,6 +60,13 @@ export default function Chat() {
     };
   }, []);
 
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const sendMessage = () => {
     if (ws && input) {
       const message: WebSocketMessage = {
@@ -89,14 +97,18 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col max-h-[calc(100vh-4rem)]">
-      <div className="mt-2 grow overflow-auto bg-background p-4 rounded-md">
+    <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
+      <div
+        className="mt-2 grow overflow-auto bg-background p-4 rounded-md"
+        ref={chatContainerRef}
+      >
         {messages.map((msg, index) => (
           <div key={index}>
             <MessageBubble message={msg.message} type={msg.type} />
           </div>
         ))}
       </div>
+
       {/* 
       <div className="relative mb-4">
         <Textarea
