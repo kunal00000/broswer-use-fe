@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { AgentResponse, WebSocketMessage } from "@/lib/types";
 import { useSocketStore } from "@/lib/stores/socket-store";
-import { Textarea } from "./ui/textarea";
-import { ArrowUp, Paperclip, Send, Square } from "lucide-react";
+import { AgentResponse, WebSocketMessage } from "@/lib/types";
+import { ArrowUp, Square } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { MessageBubble } from "./message-bubble";
 import {
   PromptInput,

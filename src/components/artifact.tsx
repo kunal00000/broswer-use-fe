@@ -1,21 +1,12 @@
 "use client";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarTrigger,
-  useSidebar,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { useSocketStore } from "@/lib/stores/socket-store";
-import { cn } from "@/lib/utils";
 import { ImagePlayIcon } from "lucide-react";
 import Image from "next/image";
-import { ModeToggle } from "./mode-toggle";
 
 export default function ArtifactViewer() {
   const screenshots = useSocketStore((state) => state.screenshots);
-
-  const { state } = useSidebar();
 
   return (
     <div className="flex">
@@ -58,4 +49,3 @@ function NoScreenshot() {
     </div>
   );
 }
-
