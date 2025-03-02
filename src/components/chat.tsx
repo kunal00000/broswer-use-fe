@@ -98,6 +98,24 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
+      <style jsx global>
+        {`
+          ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+          }
+          ::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          ::-webkit-scrollbar-thumb {
+            background-color: var(--geist-foreground-lighter, #999);
+            border-radius: 4px;
+          }
+          ::-webkit-scrollbar-thumb:hover {
+            background-color: var(--geist-foreground-light, #666);
+          }
+        `}
+      </style>
       <div
         className="mt-2 grow overflow-auto bg-background p-4 rounded-md"
         ref={chatContainerRef}
