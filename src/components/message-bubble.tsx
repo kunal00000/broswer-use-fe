@@ -8,20 +8,25 @@ export const MessageBubble = ({ message, type }: MessageType) => {
     <div className="flex flex-col gap-8">
       {isUser ? (
         <Message className="justify-end mt-4">
-          <MessageContent>{message as string}</MessageContent>
+          <MessageContent className="max-w-[80%] break-words whitespace-normal overflow-wrap-break-word">
+            {message as string}
+          </MessageContent>
         </Message>
       ) : (
         <div className="mt-4">
           {typeof message === "object" && "state" in message ? (
             <Message className="justify-start">
               <MessageAvatar src="/avatars/ai.png" alt="AI" fallback="AI" />
-              <MessageContent className="bg-transparent p-0">
+              <MessageContent className="max-w-[80%] break-words whitespace-normal overflow-wrap-break-word bg-transparent p-0">
                 {`${message.state}: ${message.thought}` as string}
               </MessageContent>
             </Message>
           ) : (
             <Message className="justify-start">
-              <MessageContent markdown className="bg-transparent p-0">
+              <MessageContent
+                markdown
+                className="max-w-[80%] break-words whitespace-normal overflow-wrap-break-word bg-transparent p-0"
+              >
                 {message}
               </MessageContent>
             </Message>
