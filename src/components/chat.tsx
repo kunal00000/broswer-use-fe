@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { useSocketStore } from "@/lib/stores/socket-store";
-import { AgentResponse, WebSocketMessage } from "@/lib/types";
+import { WebSocketMessage } from "@/lib/types";
 import { ArrowUp, Square } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { MessageBubble } from "./message-bubble";
 import {
   PromptInput,
@@ -20,51 +20,51 @@ export default function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/ws");
+  // useEffect(() => {
+  //   const socket = new WebSocket("ws://localhost:8080/ws");
 
-    socket.onopen = () => {
-      console.log("WebSocket connected");
-      setWs(socket);
-    };
+  //   socket.onopen = () => {
+  //     console.log("WebSocket connected");
+  //     setWs(socket);
+  //   };
 
-    socket.onmessage = (event: MessageEvent<string>) => {
-      const wsMessage = JSON.parse(event.data) as WebSocketMessage;
+  //   socket.onmessage = (event: MessageEvent<string>) => {
+  //     const wsMessage = JSON.parse(event.data) as WebSocketMessage;
 
-      if (wsMessage.type === "AI_RESPONSE") {
-        const message = JSON.parse(wsMessage.content) as AgentResponse;
+  //     if (wsMessage.type === "AI_RESPONSE") {
+  //       const message = JSON.parse(wsMessage.content) as AgentResponse;
 
-        useSocketStore.setState((state) => ({
-          messages: [...state.messages, { message: message, type: "AGENT" }],
-        }));
-      } else if (wsMessage.type === "SCREENSHOT") {
-        const screenshot = wsMessage.content as string;
-        useSocketStore.setState((state) => ({
-          screenshots: [...state.screenshots, screenshot],
-        }));
-      }
-    };
+  //       useSocketStore.setState((state) => ({
+  //         messages: [...state.messages, { message: message, type: "AGENT" }],
+  //       }));
+  //     } else if (wsMessage.type === "SCREENSHOT") {
+  //       const screenshot = wsMessage.content as string;
+  //       useSocketStore.setState((state) => ({
+  //         screenshots: [...state.screenshots, screenshot],
+  //       }));
+  //     }
+  //   };
 
-    socket.onclose = () => {
-      console.log("WebSocket disconnected");
-      setWs(null);
-    };
+  //   socket.onclose = () => {
+  //     console.log("WebSocket disconnected");
+  //     setWs(null);
+  //   };
 
-    socket.onerror = (error: Event) => {
-      console.error("WebSocket error:", error);
-    };
+  //   socket.onerror = (error: Event) => {
+  //     console.error("WebSocket error:", error);
+  //   };
 
-    return () => {
-      socket.close();
-    };
-  }, []);
+  //   return () => {
+  //     socket.close();
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
+  // useEffect(() => {
+  //   if (chatContainerRef.current) {
+  //     chatContainerRef.current.scrollTop =
+  //       chatContainerRef.current.scrollHeight;
+  //   }
+  // }, [messages]);
 
   const sendMessage = () => {
     if (ws && input) {
