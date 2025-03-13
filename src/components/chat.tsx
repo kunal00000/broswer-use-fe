@@ -1,10 +1,11 @@
+// components/chat.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { useSocketStore } from "@/lib/stores/socket-store";
-import { WebSocketMessage } from "@/lib/types";
+import { MessageType, WebSocketMessage } from "@/lib/types";
 import { ArrowUp, Square } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MessageBubble } from "./message-bubble";
 import {
   PromptInput,
@@ -12,59 +13,42 @@ import {
   PromptInputActions,
   PromptInputTextarea,
 } from "./ui/prompt-input";
+import { useWebSocket } from "@/lib/providers/websocker-provider";
 
 export default function Chat() {
-  const [ws, setWs] = useState<WebSocket | null>(null);
+  const { ws } = useWebSocket();
   const messages = useSocketStore((state) => state.messages);
   const [input, setInput] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // useEffect(() => {
-  //   const socket = new WebSocket("ws://localhost:8080/ws");
+  useEffect(() => {
+    if (ws) {
+      ws.onmessage = (event: MessageEvent<string>) => {
+        const wsMessage = JSON.parse(event.data) as WebSocketMessage;
 
-  //   socket.onopen = () => {
-  //     console.log("WebSocket connected");
-  //     setWs(socket);
-  //   };
+        if (wsMessage.type === "AI_RESPONSE") {
+          useSocketStore.setState((state) => ({
+            messages: [
+              ...state.messages,
+              { message: wsMessage.content, type: "AGENT" },
+            ],
+          }));
+        } else if (wsMessage.type === "SCREENSHOT") {
+          useSocketStore.setState((state) => ({
+            screenshots: [...state.screenshots, wsMessage.content],
+          }));
+        }
+      };
+    }
+  }, [ws]);
 
-  //   socket.onmessage = (event: MessageEvent<string>) => {
-  //     const wsMessage = JSON.parse(event.data) as WebSocketMessage;
-
-  //     if (wsMessage.type === "AI_RESPONSE") {
-  //       const message = JSON.parse(wsMessage.content) as AgentResponse;
-
-  //       useSocketStore.setState((state) => ({
-  //         messages: [...state.messages, { message: message, type: "AGENT" }],
-  //       }));
-  //     } else if (wsMessage.type === "SCREENSHOT") {
-  //       const screenshot = wsMessage.content as string;
-  //       useSocketStore.setState((state) => ({
-  //         screenshots: [...state.screenshots, screenshot],
-  //       }));
-  //     }
-  //   };
-
-  //   socket.onclose = () => {
-  //     console.log("WebSocket disconnected");
-  //     setWs(null);
-  //   };
-
-  //   socket.onerror = (error: Event) => {
-  //     console.error("WebSocket error:", error);
-  //   };
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (chatContainerRef.current) {
-  //     chatContainerRef.current.scrollTop =
-  //       chatContainerRef.current.scrollHeight;
-  //   }
-  // }, [messages]);
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const sendMessage = () => {
     if (ws && input) {
@@ -72,13 +56,17 @@ export default function Chat() {
         type: "USER_INPUT",
         content: input,
       };
-      ws.send(JSON.stringify(message));
-      setInput("");
-    }
 
-    useSocketStore.setState((state) => ({
-      messages: [...state.messages, { message: input, type: "USER" }],
-    }));
+      const data: MessageType = {
+        type: "TEXT",
+        data: message,
+      };
+      ws.send(JSON.stringify(data));
+      setInput("");
+      useSocketStore.setState((state) => ({
+        messages: [...state.messages, { message: input, type: "USER" }],
+      }));
+    }
   };
 
   const handleSubmit = () => {
@@ -91,30 +79,8 @@ export default function Chat() {
     setIsLoading(false);
   };
 
-  const handleValueChange = (value: string) => {
-    setInput(value);
-  };
-
   return (
     <div className="flex flex-col h-full max-h-[calc(100vh-4rem)]">
-      <style jsx global>
-        {`
-          ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-          }
-          ::-webkit-scrollbar-track {
-            background: transparent;
-          }
-          ::-webkit-scrollbar-thumb {
-            background-color: var(--geist-foreground-lighter, #999);
-            border-radius: 4px;
-          }
-          ::-webkit-scrollbar-thumb:hover {
-            background-color: var(--geist-foreground-light, #666);
-          }
-        `}
-      </style>
       <div
         className="mt-2 grow overflow-auto bg-background p-4 rounded-md"
         ref={chatContainerRef}
@@ -125,32 +91,9 @@ export default function Chat() {
           </div>
         ))}
       </div>
-
-      {/* 
-      <div className="relative mb-4">
-        <Textarea
-          placeholder="Type your message here."
-          className="bg-accent p-2 border-1 border-accent-foreground rounded-md min-h-[100px] max-h-[360px] resize-none pb-12"
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            e.target.style.height = "auto";
-            e.target.style.height = `${e.target.scrollHeight}px`;
-          }}
-        />
-        <div className="absolute bottom-2 right-8 flex flex-row gap-4">
-          <Button variant="default" size="icon">
-            <Paperclip className="h-4 w-4" />
-          </Button>
-          <Button variant="default" size="icon" onClick={() => sendMessage()}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div> */}
-
       <PromptInput
         value={input}
-        onValueChange={handleValueChange}
+        onValueChange={(value) => setInput(value)}
         isLoading={isLoading}
         onSubmit={handleSubmit}
         className="w-full max-w-(--breakpoint-md)"

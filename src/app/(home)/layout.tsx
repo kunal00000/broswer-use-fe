@@ -1,5 +1,6 @@
 import ArtifactViewer from "@/components/artifact";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { WebSocketProvider } from "@/lib/providers/websocker-provider";
 
 export default function HomeLayout({
   children,
@@ -9,8 +10,10 @@ export default function HomeLayout({
   return (
     <>
       <SidebarProvider>
-        {children}
-        <ArtifactViewer />
+        <WebSocketProvider>
+          {children}
+          <ArtifactViewer />
+        </WebSocketProvider>
       </SidebarProvider>
     </>
   );

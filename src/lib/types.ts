@@ -30,3 +30,16 @@ export type Message = {
   message: AgentResponse | string;
   type: "AGENT" | "USER";
 };
+
+export type BrowserInputData = {
+  type: "click" | "type" | "scroll";
+  x?: number;
+  y?: number;
+  value?: string;
+  deltaY?: number;
+};
+
+export type MessageType = {
+  type: "TEXT" | "BROWSER_INPUT";
+  data: WebSocketMessage | BrowserInputData;
+};
