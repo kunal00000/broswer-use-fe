@@ -1,4 +1,3 @@
-// components/artifact.tsx
 "use client";
 
 import {
@@ -56,14 +55,23 @@ export default function ArtifactViewer() {
     if (!img) return;
 
     const rect = img.getBoundingClientRect();
+    const displayedWidth = rect.width;
+    const displayedHeight = rect.height;
+
+    const viewportWidth = 1280;
+    const viewportHeight = 720;
+
+    const scaleX = viewportWidth / displayedWidth;
+    const scaleY = viewportHeight / displayedHeight;
+
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    const mappedX = Math.round(clickX);
-    const mappedY = Math.round(clickY);
+    const mappedX = Math.round(clickX * scaleX);
+    const mappedY = Math.round(clickY * scaleY);
 
     sendInteraction("click", mappedX, mappedY);
-    setTimeout(() => setIsTyping(true), 100);
+    setTimeout(() => setIsTyping(true), 30);
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLImageElement>) => {
