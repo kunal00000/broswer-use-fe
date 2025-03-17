@@ -15,9 +15,11 @@ import { BrowserInput } from "@/lib/types";
 export default function ArtifactViewer() {
   const [takeControl, setTakeControl] = useState(false);
   const [screenshot, setScreenshot] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
-
+  const containerRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const screenshots = useSocketStore((state) => state.screenshots);
 
   useEffect(() => {
@@ -35,6 +37,72 @@ export default function ArtifactViewer() {
       ws.close();
     };
   }, []);
+
+  const handleClick = (e: React.MouseEvent<HTMLImageElement>) => {
+    setIsTyping(true);
+    const img = imageRef.current;
+    if (!img) return;
+
+    const rect = img.getBoundingClientRect();
+    const displayedWidth = rect.width;
+    const displayedHeight = rect.height;
+
+    const viewportWidth = 1280;
+    const viewportHeight = 720;
+
+    const scaleX = viewportWidth / displayedWidth;
+    const scaleY = viewportHeight / displayedHeight;
+
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    const mappedX = Math.round(clickX * scaleX);
+    const mappedY = Math.round(clickY * scaleY);
+
+    const browserInput: BrowserInput = {
+      type: "click",
+      x: mappedX,
+      y: mappedY,
+    };
+
+    wsRef.current?.send(JSON.stringify(browserInput));
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLImageElement>) => {
+    const deltaY = e.deltaY;
+
+    const browserInput: BrowserInput = {
+      type: "scroll",
+      deltaY,
+    };
+
+    wsRef.current?.send(JSON.stringify(browserInput));
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isTyping || !wsRef || wsRef?.current?.readyState !== WebSocket.OPEN)
+        return;
+
+      if (e.key === "Escape") {
+        setIsTyping(false);
+      } else if (e.key.length === 1 || e.key === "Backspace") {
+        const input: BrowserInput = {
+          type: "type",
+          value: e.key === "Backspace" ? "{backspace}" : e.key,
+        };
+        wsRef.current?.send(JSON.stringify(input));
+      }
+    };
+
+    if (isTyping) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isTyping, wsRef]);
 
   return (
     <Sidebar side="right" className="bg-accent" collapsible="offcanvas">
@@ -59,16 +127,23 @@ export default function ArtifactViewer() {
           </div>
         </div>
 
-        <SidebarContent className="border-t border-l h-full border-border bg-background rounded-tl-xl">
+        <SidebarContent
+          ref={containerRef}
+          tabIndex={0}
+          className="border-t border-l h-full border-border bg-background rounded-tl-xl"
+        >
           {takeControl ? (
             screenshot !== null ? (
               <>
                 <Image
+                  ref={imageRef}
                   alt="screenshot"
                   src={screenshot}
-                  width={800}
-                  height={600}
-                  className="h-full w-full object-contain"
+                  width={1280}
+                  height={720}
+                  onClick={handleClick}
+                  onWheel={handleWheel}
+                  className="h-fit w-fit object-contain cursor-pointer"
                 />
               </>
             ) : (
@@ -78,8 +153,8 @@ export default function ArtifactViewer() {
             <Image
               alt="screenshot"
               src={screenshots[screenshots.length - 1]}
-              width={800}
-              height={600}
+              width={1280}
+              height={720}
               className="h-full w-full object-contain"
             />
           ) : (
