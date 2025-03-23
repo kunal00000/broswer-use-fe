@@ -34,6 +34,8 @@ export default function Chat() {
       if (wsMessage.type === "AI_RESPONSE") {
         const message = JSON.parse(wsMessage.content) as AgentResponse;
 
+        console.log("AI Response:", message);
+
         useSocketStore.setState((state) => ({
           messages: [...state.messages, { message: message, type: "AGENT" }],
         }));

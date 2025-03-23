@@ -18,7 +18,9 @@ export const MessageBubble = ({ message, type }: MessageType) => {
             <Message className="justify-start">
               <MessageAvatar src="/avatars/ai.png" alt="AI" fallback="AI" />
               <MessageContent className="max-w-[80%] break-words whitespace-normal overflow-wrap-break-word bg-transparent p-0">
-                {`${message.state}: ${message.thought}` as string}
+                {
+                  `${message.state}: ${message.thought} -- ${message.final_output}` as string
+                }
               </MessageContent>
             </Message>
           ) : (
